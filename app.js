@@ -284,7 +284,7 @@ function updateCountdown(type, diffTime) {
 }
 
 function sendTestAlert(type) {
-  triggerAlert(type, `Test Alert: ${type.toUpperCase()}`, `This is a test alert for your ${type} monitor.`, 'info');
+  triggerAlert(type, `Test Alert: ${type.toUpperCase()}`, `This is a test alert for your ${type} monitor.`, 'danger');
 }
 
 // ===== ALERTS & NOTIFICATIONS =====
@@ -319,15 +319,27 @@ function triggerAlert(type, title, message, level = 'warning') {
 
 function sendEmailAlert(type, title, message) {
   const { emailjsService, emailjsTemplate, emailjsPublicKey, alertEmail } = state.settings;
-  if (!emailjsService || !emailjsTemplate || !emailjsPublicKey || !alertEmail) return;
+  if (!emailjsService || !emailjsTemplate || !emailjsPublicKey || !alertEmail) {
+    console.warn('Email settings incomplete');
+    return;
+  }
   
   const templateParams = {
     alert_type: type.toUpperCase(),
     message: message,
     time: new Date().toLocaleString(),
-    to_email: alertEmail
+    to_email: alertEmail,
+    alert_title: title
   };
-  emailjs.send(emailjsService, emailjsTemplate, templateParams);
+
+  emailjs.send(emailjsService, emailjsTemplate, templateParams)
+    .then(() => {
+      showToast('Email Sent', 'Notification sent successfully.', 'success');
+    })
+    .catch((error) => {
+      console.error('EmailJS Error:', error);
+      showToast('Email Failed', 'Check your Service/Template IDs.', 'error');
+    });
 }
 
 function saveEmailSettings() {
