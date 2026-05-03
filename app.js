@@ -35,10 +35,10 @@ function init() {
   setupUI();
   updateDashboard();
   
-  // Update countdowns every minute
+  // Update countdowns every second
   setInterval(() => {
     updateDashboard();
-  }, 60000);
+  }, 1000);
   
   requestNotificationPermission();
   
@@ -184,6 +184,8 @@ function renderCustomMonitors() {
               <div class="time-unit"><span class="time-num" id="custom-${monitor.id}-hours">--</span><span class="time-lbl">Hours</span></div>
               <div class="time-sep">:</div>
               <div class="time-unit"><span class="time-num" id="custom-${monitor.id}-mins">--</span><span class="time-lbl">Mins</span></div>
+              <div class="time-sep">:</div>
+              <div class="time-unit"><span class="time-num" id="custom-${monitor.id}-secs">--</span><span class="time-lbl">Secs</span></div>
             </div>
           </div>
           <div class="progress-wrap">
@@ -252,6 +254,7 @@ function updateCountdown(type, diffTime) {
       document.getElementById(`${pre}-days`).textContent = '00';
       document.getElementById(`${pre}-hours`).textContent = '00';
       document.getElementById(`${pre}-mins`).textContent = '00';
+      document.getElementById(`${pre}-secs`).textContent = '00';
       document.getElementById(`${type}-progress`).style.width = '100%';
       document.getElementById(`${type}-progress-label`).textContent = '100% elapsed';
     }
@@ -261,11 +264,13 @@ function updateCountdown(type, diffTime) {
   const d = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   const h = Math.floor((diffTime / (1000 * 60 * 60)) % 24);
   const m = Math.floor((diffTime / 1000 / 60) % 60);
+  const s = Math.floor((diffTime / 1000) % 60);
   
   if(document.getElementById(`${pre}-days`)) {
     document.getElementById(`${pre}-days`).textContent = d.toString().padStart(2, '0');
     document.getElementById(`${pre}-hours`).textContent = h.toString().padStart(2, '0');
     document.getElementById(`${pre}-mins`).textContent = m.toString().padStart(2, '0');
+    document.getElementById(`${pre}-secs`).textContent = s.toString().padStart(2, '0');
     
     // Progress logic
     const totalDays = 365; // Arbitrary 1 year max for progress visual
